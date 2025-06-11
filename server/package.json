@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
@@ -17,5 +18,9 @@
     "express-session": "^1.18.1",
     "socket.io": "^4.8.1",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "mocha": "^11.6.0",
+    "supertest": "^7.1.1"
   }
 }

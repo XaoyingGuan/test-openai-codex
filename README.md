@@ -12,6 +12,12 @@ npm install
 npm start
 ```
 
+Run the unit tests with:
+
+```bash
+npm test
+```
+
 The server runs on port 3000.
 
 2. Open `client/index.html` in your browser. Use the register/login form to authenticate, then play the game. The leaderboard will show top scores.
