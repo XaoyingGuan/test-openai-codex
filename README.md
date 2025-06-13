@@ -24,7 +24,7 @@ The server runs on port 3000.
 
 ## Transcriber App
 
-`transcriber_app.py` is a standalone script that transcribes audio or video files and produces `.srt` subtitles with basic speaker diarization. It relies only on local models (Whisper and Resemblyzer) and runs entirely offline.
+`transcriber_app.py` is a standalone script that transcribes audio or video files and produces subtitle files with basic speaker diarization. It relies only on local models (Whisper and Resemblyzer) and runs entirely offline. `ffmpeg` must be installed on your system.
 
 Run the app with:
 
@@ -33,4 +33,4 @@ pip install -r requirements.txt
 python transcriber_app.py
 ```
 
-A browser window will open allowing you to upload media files and download the generated subtitles.
+A browser window will open allowing you to upload media files, choose the output format (`srt` or `ass`), and download the generated subtitles.

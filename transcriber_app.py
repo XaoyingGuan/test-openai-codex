@@ -1,9 +1,11 @@
 import gradio as gr
-import subprocess, tempfile, os
+import subprocess
+import tempfile
+import os
 import numpy as np
 import soundfile as sf
 import webrtcvad
-from resemblyzer import VoiceEncoder, preprocess_wav, sampling_rate
+from resemblyzer import VoiceEncoder, sampling_rate
 import whisper
 from sklearn.cluster import AgglomerativeClustering
 
@@ -67,30 +69,75 @@ def make_srt(res, diar):
     lines = []
     for i, seg in enumerate(res["segments"], 1):
         sp = assign_speaker(seg, diar)
-        lines.append(f"{i}\n{fmt(seg['start'])} --> {fmt(seg['end'])}\n<S{sp+1}> {seg['text'].strip()}\n")
+        lines.append(
+            f"{i}\n{fmt(seg['start'])} --> {fmt(seg['end'])}\n<S{sp+1}> {seg['text'].strip()}\n"
+        )
     return "\n".join(lines)
 
 
-def process(file, language):
+def fmt_ass(t):
+    h = int(t // 3600)
+    t %= 3600
+    m = int(t // 60)
+    s = t % 60
+    return f"{h:d}:{m:02d}:{s:05.2f}"
+
+
+def make_ass(res, diar):
+    header = (
+        "[Script Info]\nScriptType: v4.00+\n\n"
+        "[V4+ Styles]\n"
+        "Format: Name,Fontname,Fontsize,PrimaryColour,SecondaryColour,OutlineColour,"
+        "BackColour,Bold,Italic,Underline,StrikeOut,ScaleX,ScaleY,Spacing,Angle,"
+        "BorderStyle,Outline,Shadow,Alignment,MarginL,MarginR,MarginV,Encoding\n"
+        "Style: Default,Arial,40,&H00FFFFFF,&H0000FFFF,&H00000000,&H64000000,-1,0,"
+        "0,0,100,100,0,0,1,2,0,2,10,10,10,1\n\n"
+        "[Events]\n"
+        "Format: Layer,Start,End,Style,Name,MarginL,MarginR,MarginV,Effect,Text"
+    )
+    lines = [header]
+    for seg in res["segments"]:
+        sp = assign_speaker(seg, diar)
+        lines.append(
+            f"Dialogue: 0,{fmt_ass(seg['start'])},{fmt_ass(seg['end'])},Default,S{sp+1},0,0,0,,{seg['text'].strip()}"
+        )
+    return "\n".join(lines)
+
+
+def process(file, language, output):
     wav_path = convert_to_wav(file)
     wav, _ = sf.read(wav_path)
     diar = diarize(wav)
     model = whisper.load_model("base")
     kwargs = {} if language == "Auto" else {"language": language}
     res = model.transcribe(wav_path, **kwargs)
-    srt = make_srt(res, diar)
-    out = tempfile.mktemp(suffix=".srt")
+
+    if output == "srt":
+        text = make_srt(res, diar)
+        suffix = ".srt"
+    else:
+        text = make_ass(res, diar)
+        suffix = ".ass"
+
+    out = tempfile.mktemp(suffix=suffix)
     with open(out, "w", encoding="utf-8") as f:
-        f.write(srt)
+        f.write(text)
+
+    os.remove(wav_path)
     return out
 
 
 def main():
     langs = ["Auto", "en", "es", "fr", "de", "it", "pt", "ru", "ja", "zh"]
+    formats = ["srt", "ass"]
     gr.Interface(
         fn=process,
-        inputs=[gr.File(label="Audio/Video"), gr.Dropdown(langs, label="Language", value="Auto")],
-        outputs=gr.File(label="Subtitle (.srt)"),
+        inputs=[
+            gr.File(label="Audio/Video"),
+            gr.Dropdown(langs, label="Language", value="Auto"),
+            gr.Dropdown(formats, label="Format", value="srt"),
+        ],
+        outputs=gr.File(label="Subtitle"),
         title="Multilingual Transcriber",
         description="Upload an audio or video file to generate subtitles with speaker tags"
     ).launch()
