@@ -1,36 +1,31 @@
-# Multiplayer Snake Game
+# Offline Transcriber
 
-This demo allows multiple players to play a basic Snake game at the same time. Each player can register/login with an email and password and their best score is stored in a SQLite database.
+This project is a simple web interface for creating subtitles from audio or video files. It runs entirely offline using the Whisper speech recognition model and Resemblyzer for basic speaker diarization.
 
-## Setup
+## Features
 
-1. Install dependencies and start the server:
+- Works with common audio and video formats
+- Automatically detects language or allows manual selection
+- Generates `.srt` or `.ass` subtitle files with speaker tags
+- Requires no API keys or external services
 
-```bash
-cd server
-npm install
-npm start
-```
+## Installation
 
-Run the unit tests with:
-
-```bash
-npm test
-```
-
-The server runs on port 3000.
-
-2. Open `client/index.html` in your browser. Use the register/login form to authenticate, then play the game. The leaderboard will show top scores.
-
-## Transcriber App
-
-`transcriber_app.py` is a standalone script that transcribes audio or video files and produces subtitle files with basic speaker diarization. It relies only on local models (Whisper and Resemblyzer) and runs entirely offline. `ffmpeg` must be installed on your system.
-
-Run the app with:
+1. Install [ffmpeg](https://ffmpeg.org/) so the app can convert your media files:
+   - On Ubuntu/Debian: `sudo apt-get install ffmpeg`
+   - On macOS with Homebrew: `brew install ffmpeg`
+2. Install Python dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
+
+## Usage
+
+Run the transcriber with:
+
+```bash
 python transcriber_app.py
 ```
 
-A browser window will open allowing you to upload media files, choose the output format (`srt` or `ass`), and download the generated subtitles.
+A browser window will open where you can upload audio or video, pick a language (or leave "Auto"), choose the subtitle format, and download the resulting file.
