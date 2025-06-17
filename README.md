@@ -21,3 +21,16 @@ npm test
 The server runs on port 3000.
 
 2. Open `client/index.html` in your browser. Use the register/login form to authenticate, then play the game. The leaderboard will show top scores.
+
+## Transcriber App
+
+`transcriber_app.py` is a standalone script that transcribes audio or video files and produces subtitle files with basic speaker diarization. It relies only on local models (Whisper and Resemblyzer) and runs entirely offline. `ffmpeg` must be installed on your system.
+
+Run the app with:
+
+```bash
+pip install -r requirements.txt
+python transcriber_app.py
+```
+
+A browser window will open allowing you to upload media files, choose the output format (`srt` or `ass`), and download the generated subtitles.

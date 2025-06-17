@@ -1,0 +1,6 @@
+whisper
+resemblyzer
+webrtcvad
+soundfile
+gradio
+scikit-learn
